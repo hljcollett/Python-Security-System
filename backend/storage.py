@@ -11,6 +11,7 @@ API_ENDPOINT = "http://127.0.0.1:5000/motion_detected"
 STORAGE_CLIENT = storage.Client.from_service_account_json('credentials.json')
 bucket = STORAGE_CLIENT.get_bucket(BUCKET_NAME)
 
+
 def upload_to_bucket(blob_name, path_to_file):
     blob = bucket.blob(blob_name)
     blob.content_type = 'video/mp4'
@@ -25,6 +26,7 @@ def upload_to_bucket(blob_name, path_to_file):
     print(f"A new file by the name of {blob_name} was created in your bucket {BUCKET_NAME}")
     return blob.public_url
 
+
 def handle_detection(path_to_file):
     def action_thread(path_to_file):
         output_path = path_to_file.split(".mp4")[0] + "-out.mp4"
@@ -35,7 +37,7 @@ def handle_detection(path_to_file):
             "url": url,
         }
         requests.post(API_ENDPOINT, json=data)
-    
+
     thread = threading.Thread(target=action_thread, args=(path_to_file,))
     thread.start()
 
@@ -57,4 +59,3 @@ def list_videos_in_date_range(start_date, end_date, extension=".mp4"):
                 matching_files.append({"url": blob.public_url, "date": blob.time_created})
 
     return matching_files
-
